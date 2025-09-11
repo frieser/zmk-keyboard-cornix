@@ -19,17 +19,22 @@
 
 #define HM_TAPPING_TERM_FAST 200
 #define HM_PRIOR_IDLE 70
+
+// mouse accelleration
+#define ZMK_POINTING_DEFAULT_MOVE_VAL 1500  // default: 600
+#define ZMK_POINTING_DEFAULT_SCRL_VAL 20    // default: 10
+
+#include <dt-bindings/zmk/pointing.h>
+
+// Layers
 #define BASE 0
-#define WIN 1
-#define LOWER 2
-#define RAISE 3
-#define ADJUST 4
-#define NAVI   5
-#define NUM    6
-#define DEBUG  7
-#define GRAPHITE 8
-#define SYMBOL 9
-#define MACRO 10
+#define SYMBOL 1
+#define NAVI   2
+#define NUM    3
+#define MACRO  4
+#define ADJUST 5
+/* #define DEBUG  7 */
+/* #define GRAPHITE 8 */
 
 // https://github.com/urob/zmk-config/tree/main#timeless-homerow-mods
 
@@ -37,7 +42,6 @@
 #define KEYS_R RT0 RT1 RT2 RT3 RT4 RT5 RM0 RM1 RM2 RM3 RM4 RM5 RB0 RB1 RB2 RB3 RB4 RB5  // right hand
 #define THUMBS LH1 LH0 RH0 RH1
 #define KEYS_T LH1 LH0 RH0 RH1
-#define ZMK_POINTING_DEFAULT_SCRL_VAL 15
 
 #include <behaviors.dtsi>
 #include <dt-bindings/zmk/bt.h>
@@ -48,7 +52,45 @@
 / {
     // Activate ADJUST layer by pressing raise and lower
 
+    macros {
+        email_macro: email_macro {
+            compatible = "zmk,behavior-macro";
+            #binding-cells = <0>;
+            wait-ms = <40>;
+            tap-ms = <40>;
+            bindings
+                    = <&kp F &kp R &kp I &kp E &kp S &kp E &kp R &kp P &kp A &kp L &kp D &kp I>
+                    , <&kp AT>  /* @ */
+                    , <&kp G &kp M &kp A &kp I &kp L &kp DOT &kp C &kp O &kp M>
+                    ;
+        };
+        my_user_macro: my_user_macro {
+            compatible = "zmk,behavior-macro";
+            #binding-cells = <0>;
+            wait-ms = <20>;  
+            tap-ms = <20>;
+            bindings = <&kp E &kp N0 &kp N5 &kp N3 &kp N2 &kp N7 &kp N4>;
+        };
+    };
     behaviors {
+        mm_minus_pipe: mm_minus_pipe {
+            compatible = "zmk,behavior-mod-morph";
+            #binding-cells = <0>;
+            bindings = <&kp MINUS>, <&kp PIPE>;
+            mods = <(MOD_LSFT|MOD_RSFT)>;
+        };
+        mm_dot_comma: mm_dot_comma {
+            compatible = "zmk,behavior-mod-morph";
+            #binding-cells = <0>;
+            bindings = <&kp DOT>, <&kp COMMA>;
+            mods = <(MOD_LSFT|MOD_RSFT)>;
+        };
+        mm_quote_colon: mm_quote_colon {
+            compatible = "zmk,behavior-mod-morph";
+            #binding-cells = <0>;
+            bindings = <&kp SQT>, <&kp COLON>;
+            mods = <(MOD_LSFT|MOD_RSFT)>;
+        };
         hm_l: homerow_mods_left {
             compatible = "zmk,behavior-hold-tap";
             #binding-cells = <2>;
@@ -141,23 +183,23 @@
         };
     };
 
-    conditional_layers {
-        compatible = "zmk,conditional-layers";
-
-        adjust_layer {
-            if-layers = <3 2>;
-            then-layer = <4>;
-        };
-    };
+    /* conditional_layers { */
+    /*     compatible = "zmk,conditional-layers"; */
+    /**/
+    /*     adjust_layer { */
+    /*         if-layers = <3 2>; */
+    /*         then-layer = <4>; */
+    /*     }; */
+    /* }; */
 
     combos {
         compatible = "zmk,combos";
 
-        cb_ltm {
-            bindings = <&kp ESC>;
-            key-positions = <2 4>;
-            layers = <0 1>;
-        };
+        /* cb_ltm { */
+        /*     bindings = <&kp ESC>; */
+        /*     key-positions = <2 4>; */
+        /*     layers = <0 1>; */
+        /* }; */
 
         cb_lm {
             bindings = <&kp TAB>;
@@ -171,15 +213,15 @@
             layers = <0 1>;
         };
 
-        layer3 {
-            bindings = <&kp N3>;
-            key-positions = <5 6>;
-        };
+        /* layer3 { */
+        /*     bindings = <&kp N3>; */
+        /*     key-positions = <5 6>; */
+        /* }; */
 
-        layer4 {
-            bindings = <&kp N4>;
-            key-positions = <5 6>;
-        };
+        /* layer4 { */
+        /*     bindings = <&kp N4>; */
+        /*     key-positions = <5 6>; */
+        /* }; */
     };
 
     keymap {
@@ -196,31 +238,12 @@
             //               | GUI | ALT  | CTRL | LOWER|  ENTER |  | SPACE | RAISE| CTRL  | ALT   | GUI  |
 
             bindings = <
-&kp TAB  &kp Q          &kp W         &kp E         &kp R                &kp T                      &kp Y      &kp U                &kp I            &kp O         &kp P             &kp BSLH
-&kp ESC  &hm_l LGUI A  &hm_l LALT S  &hm_l LCTRL D  &hm_shift_l LSHFT F  &kp G                      &kp H      &hm_shift_r RSHFT J  &hm_r RCTRL K     &hm_r RALT L  &hm_r RGUI SINGLE_QUOTE  &kp SQT
-&mo 4    &hm_l LGUI Z   &kp X         &kp C         &kp V                &kp B        &none  &none  &kp N      &kp M                &kp MINUS        &kp DOT       &kp FSLH          &kp BACKSPACE
-&none    &none          &none         &kp ESCAPE  &kp BACKSPACE                &kp SPACE                &lt 9 ENTER   &kp ESCAPE                &kp BACKSPACE  &none         &none             &none
+&kp TAB  &kp Q          &kp W         &kp E          &kp R                &kp T                      &kp Y         &kp U                &kp I          &kp O         &kp P             &kp BSLH
+&kp ESC  &hm_l LGUI A   &hm_l LALT S  &hm_l LCTRL D  &hm_shift_l LSHFT F  &kp G                      &kp H         &hm_shift_r RSHFT J  &hm_r RCTRL K  &hm_r RALT L  &mm_quote_colon   &kp SQT
+&mo 4    &hm_l LGUI Z   &kp X         &kp C          &kp V                &kp B        &none  &none  &kp N         &kp M                &mm_minus_pipe &mm_dot_comma &hm_l RGUI FSLH   &kp BACKSPACE
+&none    &none          &none         &kp ESCAPE     &lt 4 BACKSPACE      &lt 2 SPACE                &lt 1 ENTER   &lt 3 ESCAPE         &kp BACKSPACE  &none         &none             &none
             >;
-            sensor-bindings = <&inc_dec_kp C_VOL_UP C_VOL_DN &inc_dec_kp PG_UP PG_DN>;
-        };
-
-        win_layer {
-            display-name = "Windows";
-
-            // ------------------------------------------------------------------------------------------------------------
-            // |   `   |  1  |  2  |  3   |  4   |  5   |                   |  6   |  7    |  8    |  9   |   0   |       |
-            // |  ESC  |  Q  |  W  |  E   |  R   |  T   |                   |  Y   |  U    |  I    |  O   |   P   | BKSPC |
-            // |  TAB  |  A  |  S  |  D   |  F   |  G   |                   |  H   |  J    |  K    |  L   |   ;   |   '   |
-            // | SHIFT |  Z  |  X  |  C   |  V   |  B   |  MUTE  |  |       |  N   |  M    |  ,    |  .   |   /   | SHIFT |
-            //               | GUI | ALT  | CTRL | LOWER|  ENTER |  | SPACE | RAISE| CTRL  | ALT   | GUI  |
-
-            bindings = <
-&trans    &trans         &trans        &trans         &trans               &trans                  &trans  &trans               &trans         &trans        &trans            &trans
-&trans    &hm_l LCTRL A  &hm_l LALT S  &hm_l LCTRL D  &hm_shift_l LSHFT F  &trans                  &trans  &hm_shift_r RSHFT J  &hm_r RCTRL K  &hm_r RALT L  &hm_r RCTRL SEMI  &trans
-&kp LGUI  &trans         &trans        &trans         &trans               &trans  &trans  &trans  &trans  &trans               &trans         &trans        &trans            &trans
-&none     &none          &none         &trans         &trans               &trans                  &trans  &trans               &trans         &none         &none             &none
-            >;
-            sensor-bindings = <&inc_dec_kp C_VOL_UP C_VOL_DN &inc_dec_kp PG_UP PG_DN>;
+            sensor-bindings = <&inc_dec_kp K_VOL_UP K_VOL_DN &inc_dec_kp PG_UP PG_DN>;
         };
 
         Symbol_layer {
@@ -235,87 +258,62 @@
             //               |     |      |      |      |        |  |       |      |       |       |      |
 
             bindings = <
-&none  &kp EXCL  &kp AT    &kp HASH  &kp DLLR  &kp PRCNT                  &kp CARET  &kp AMPS      &kp ASTRK  &kp LPAR   &kp RPAR  &kp PIPE
-&none  &none     &kp LBKT  &kp RBKT  &kp LBRC  &kp RBRC                   &kp EQUAL  &kp UNDER     &kp MINUS  &kp PLUS   &kp DQT   &kp SQT
-&none  &none     &kp RBKT  &kp RPAR  &kp PIPE  &kp BSLH   &trans  &trans  &kp FSLH   &kp QUESTION  &kp GRAVE  &kp TILDE  &kp SQT   &none
-&none  &none     &none     &none     &trans    &trans                     &kp TILDE  &trans        &kp GRAVE  &none      &none     &none
+&none  &kp GRAVE  &kp ASTRK &kp EQUAL &kp EXCL  &kp CARET                  &kp SQT    &kp DQT      &kp PRCNT  &kp BSLH   &kp TILDE  &kp PIPE
+&none  &kp N0     &kp LBKT  &kp LBRC  &kp LPAR  &kp UNDER                  &kp MINUS  &kp RPAR     &kp RBRC   &kp RBKT   &kp DLLR   &kp SQT
+&none  &kp HASH   &kp AMPS  &kp AT    &kp LT    &kp FSLH   &trans  &trans  &kp EQUAL  &kp GT       &kp COMMA  &kp DOT    &kp SEMI   &none
+&none  &none      &none     &none     &trans    &kp TAB                     &trans     &trans       &trans     &none      &none      &none
             >;
-            sensor-bindings = <&inc_dec_kp C_VOL_UP C_VOL_DN &inc_dec_kp PG_UP PG_DN>;
-        };
-
-        Mix_layer {
-            display-name = "Mix";
-
-            // ------------------------------------------------------------------------------------------------------------
-            // | BTCLR | BT1  | BT2  |  BT3  |  BT4  |  BT5 |                |      |      |       |      |       |       |
-            // |       | INS  | PSCR | GUI   |       |      |                | PGUP |      |   ^   |      |       |       |
-            // |       | ALT  | CTRL | SHIFT |       | CAPS |                | PGDN |   <- |   v   |  ->  |  DEL  | BKSPC |
-            // |       | UNDO | CUT  | COPY  | PASTE |      |      |  |      |      |      |       |      |       |       |
-            //                |      |       |       |      |      |  |      |      |      |       |      |
-
-            bindings = <
-&trans  &kp F1  &kp F2  &kp F3   &kp F4  &kp F5                         &kp F6    &kp F7     &kp F8     &kp F9    &kp F10  &kp F11
-&trans  &kp N5  &kp N4  &kp N3   &kp N2  &kp N1                         &kp BSPC  &kp MINUS  &kp EQUAL  &kp PLUS  &kp DQT  &kp F12
-&trans  &kp N6  &kp N7  &kp N8   &kp N9  &kp N0         &trans  &trans  &kp TAB   &kp INS    &kp HOME   &kp END   &trans   &trans
-&none   &none   &none   &kp TAB  &trans  &kp BACKSPACE                  &trans    &trans     &kp N3     &none     &none    &none
-            >;
-            sensor-bindings = <&inc_dec_kp C_VOL_UP C_VOL_DN &inc_dec_kp PG_UP PG_DN>;
-        };
-
-        Adjust_layer {
-            display-name = "Adjust";
-
-            // ----------------------------------------------------------------------------------------------------------------------------
-            // | BTCLR  |  BT1    |  BT2    |   BT3   |   BT4   |   BT5   |                  |      |      |       |      |       |       |
-            // | moDEBUG| RGB_HUD | RGB_HUI | RGB_SAD | RGB_SAI | RGB_EFF |                  |      |      |       |      |       |       |
-            // | EXTPWR | RGB_BRD | RGB_BRI |         |         |         |                  |      |      |       |      |       |       |
-            // |        |         |         |         |         |         | RGB_TOG | |      |      |      |       |      |       |       |
-            //                    |         |         |         |         |         | |      |      |      |       |      |
-
-            bindings = <
-&bt BT_CLR      &bt BT_SEL 0   &bt BT_SEL 1   &bt BT_SEL 2   &bt BT_SEL 3   &bt BT_SEL 4                   &none   &none  &none   &none  &none             &none
-&none           &bt BT_DISC 0  &bt BT_DISC 1  &bt BT_DISC 2  &bt BT_DISC 3  &bt BT_DISC 4                  &tog 1  &to 0  &none   &none  &none             &tog 1
-&bt BT_CLR_ALL  &none          &none          &none          &none          &none          &trans  &trans  &none   &none  &none   &none  &ext_power EP_ON  &kp CAPSLOCK
-&none           &none          &none          &none          &none          &none                          &none   &none  &kp N4  &none  &none             &none
-            >;
+            sensor-bindings = <&inc_dec_kp K_VOL_UP K_VOL_DN &inc_dec_kp PG_UP PG_DN>;
         };
 
         Navi_layer {
             display-name = "Navi";
             bindings = <
-&none  &none  &none           &mmv MOVE_UP    &kp PAGE_UP      &kp PAGE_DOWN                   &mkp MB1  &mkp MB3  &mkp MB2  &msc SCRL_UP  &msc SCRL_DOWN  &none
-&none  &none  &mmv MOVE_LEFT  &mmv MOVE_DOWN  &mmv MOVE_RIGHT  &msc SCRL_UP                    &kp LEFT  &kp DOWN  &kp UP    &kp RIGHT     &none           &none
-&none  &none  &none           &none           &none            &msc SCRL_DOWN  &trans  &trans  &trans    &trans    &none     &none         &none           &none
-&none  &none  &none           &mo 7           &trans           &trans                          &none     &none     &kp N5    &none         &none           &none
+&none &none  &kp K_PREVIOUS  &kp K_VOLUME_UP   &kp K_NEXT        &none                  &none           &mkp MB1        &msc SCRL_UP    &mkp MB2           &none &none
+&none &none  &mkp MB2        &kp K_MUTE        &mkp MB1          &none                  &mmv MOVE_LEFT  &mmv MOVE_DOWN  &mmv MOVE_UP    &mmv MOVE_RIGHT    &none &none
+&none &none  &mkp MB3        &kp K_VOLUME_DOWN &kp K_PLAY_PAUSE  &none  &trans  &trans  &none           &msc SCRL_LEFT  &msc SCRL_DOWN  &msc SCRL_RIGHT    &none &none
+&none &none  &none           &mkp MB3          &trans            &trans                 &mkp MB1        &mkp MB2        &trans          &none              &none &none
             >;
         };
 
         KeyPad_layer {
             display-name = "NumPad";
             bindings = <
-&mo 7  &none  &none  &none  &none  &none                  &kp KP_N7        &kp KP_N8        &kp KP_N9        &kp KP_MINUS  &kp KP_MULTIPLY  &none
-&none  &none  &none  &none  &none  &none                  &kp KP_NUMBER_4  &kp KP_NUMBER_5  &kp KP_N6        &kp KP_PLUS   &kp KP_DIVIDE    &none
-&none  &none  &none  &none  &none  &none  &trans  &trans  &kp KP_NUMBER_1  &kp KP_NUMBER_2  &kp KP_N3        &none         &none            &none
-&none  &none  &none  &none  &none  &mo 7                  &kp KP_N0        &kp KP_DOT       &kp KP_NUMBER_0  &none         &none            &none
+&none &none   &kp N7      &kp N8  &kp N9   &kp KP_PLUS                        &none           &kp HOME        &kp PAGE_UP     &kp INSERT       &none            &none 
+&none &none   &kp N4      &kp N5  &kp N6   &kp KP_MINUS                       &kp LEFT_ARROW  &kp DOWN_ARROW  &kp UP_ARROW    &kp RIGHT_ARROW  &none            &none
+&none &kp N0   &kp N1      &kp N2  &kp N3   &kp KP_MULTIPLY &trans  &trans     &none           &kp END         &kp PAGE_DOWN   &trans           &kp C_RESET      &none
+&none &kp N0  &kp KP_DOT  &kp N0  &kp DEL  &kp N0                             &none           &none           &none           &none            &none            &mo 7
             >;
         };
-
-        Debug_layer {
-            display-name = "Debug";
-
-            // ----------------------------------------------------------------------------------------------------------------------------
-            // | BTCLR  |  BT1    |  BT2    |   BT3   |   BT4   |   BT5   |                  |      |      |       |      |       |       |
-            // | EXTPWR | BTCLR | RGB_HUI | RGB_SAD | RGB_SAI | RGB_EFF |                  |      |      |       |      |       |       |
-            // |        | RGB_BRD | RGB_BRI |         |         |         |                  |      |      |       |      |       |       |
-            // |        |         |         |         |         |         | RGB_TOG | |      |      |      |       |      |       |       |
-            //                    |         |         |         |         |         | |      |      |      |       |      |
+        Macro_layer {
+            display-name = "Macro";
 
             bindings = <
-&bt BT_CLR  &bt BT_SEL 0  &bt BT_SEL 1  &bt BT_SEL 2  &bt BT_SEL 3  &bt BT_SEL 4                  &none        &none  &none   &none  &none  &none
-&none       &none         &none         &none         &none         &none                         &none        &none  &none   &none  &none  &none
-&none       &none         &none         &none         &none         &bootloader   &trans  &trans  &bootloader  &none  &none   &none  &none  &none
-&none       &none         &none         &none         &none         &none                         &none        &none  &kp N7  &none  &none  &none
+&none &none           &none &none &none &none               &none &none &none &none &none             &none
+&none &none           &none &none &none &none               &none &none &none &none &none             &none
+&none &email_macro    &none &none &none &none &trans &trans &none &none &none &none &my_user_macro    &none
+&none &none           &none &none &none &none               &none &none &none &none &none             &none
             >;
         };
+
+/**/
+/**/
+/*         Debug_layer { */
+/*             display-name = "Debug"; */
+/**/
+/*             // ---------------------------------------------------------------------------------------------------------------------------- */
+/*             // | BTCLR  |  BT1    |  BT2    |   BT3   |   BT4   |   BT5   |                  |      |      |       |      |       |       | */
+/*             // | EXTPWR | BTCLR | RGB_HUI | RGB_SAD | RGB_SAI | RGB_EFF |                  |      |      |       |      |       |       | */
+/*             // |        | RGB_BRD | RGB_BRI |         |         |         |                  |      |      |       |      |       |       | */
+/*             // |        |         |         |         |         |         | RGB_TOG | |      |      |      |       |      |       |       | */
+/*             //                    |         |         |         |         |         | |      |      |      |       |      | */
+/**/
+/*             bindings = < */
+/* &bt BT_CLR  &bt BT_SEL 0  &bt BT_SEL 1  &bt BT_SEL 2  &bt BT_SEL 3  &bt BT_SEL 4                  &none        &none  &none   &none  &none  &none */
+/* &none       &none         &none         &none         &none         &none                         &none        &none  &none   &none  &none  &none */
+/* &none       &none         &none         &none         &none         &bootloader   &trans  &trans  &bootloader  &none  &none   &none  &none  &none */
+/* &none       &none         &none         &none         &none         &none                         &none        &none  &kp N7  &none  &none  &none */
+/*             >; */
+/*         }; */
     };
 };
